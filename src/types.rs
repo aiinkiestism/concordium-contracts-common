@@ -672,7 +672,7 @@ impl<'a> ContractName<'a> {
     /// "init_<contract_name>".
     #[inline(always)]
     pub fn new(name: &'a str) -> Result<Self, NewContractNameError> {
-        ContractName::is_valid_contract_name(name)?;
+        is_valid_contract_name(name)?;
         Ok(ContractName(name))
     }
 
@@ -684,30 +684,30 @@ impl<'a> ContractName<'a> {
     /// Get contract name used on chain: "init_<contract_name>".
     #[inline(always)]
     pub fn get_chain_name(self) -> &'a str { self.0 }
+}
 
-    /// Check whether the given string is a valid contract initialization
-    /// function name. This is the case if and only if
-    /// - the string is no more than [constants::MAX_FUNC_NAME_SIZE][m] bytes
-    /// - the string starts with `init_`
-    /// - the string __does not__ contain a `.`
-    /// - all characters are ascii alphanumeric or punctuation characters.
-    ///
-    /// [m]: ./constants/constant.MAX_FUNC_NAME_SIZE.html
-    pub fn is_valid_contract_name(name: &str) -> Result<(), NewContractNameError> {
-        if !name.starts_with("init_") {
-            return Err(NewContractNameError::MissingInitPrefix);
-        }
-        if name.len() > constants::MAX_FUNC_NAME_SIZE {
-            return Err(NewContractNameError::TooLong);
-        }
-        if name.contains('.') {
-            return Err(NewContractNameError::ContainsDot);
-        }
-        if !name.chars().all(|c| c.is_ascii_alphanumeric() || c.is_ascii_punctuation()) {
-            return Err(NewContractNameError::InvalidCharacters);
-        }
-        Ok(())
+/// Check whether the given string is a valid contract initialization
+/// function name. This is the case if and only if
+/// - the string is no more than [constants::MAX_FUNC_NAME_SIZE][m] bytes
+/// - the string starts with `init_`
+/// - the string __does not__ contain a `.`
+/// - all characters are ascii alphanumeric or punctuation characters.
+///
+/// [m]: ./constants/constant.MAX_FUNC_NAME_SIZE.html
+pub fn is_valid_contract_name(name: &str) -> Result<(), NewContractNameError> {
+    if !name.starts_with("init_") {
+        return Err(NewContractNameError::MissingInitPrefix);
     }
+    if name.len() > constants::MAX_FUNC_NAME_SIZE {
+        return Err(NewContractNameError::TooLong);
+    }
+    if name.contains('.') {
+        return Err(NewContractNameError::ContainsDot);
+    }
+    if !name.chars().all(|c| c.is_ascii_alphanumeric() || c.is_ascii_punctuation()) {
+        return Err(NewContractNameError::InvalidCharacters);
+    }
+    Ok(())
 }
 
 /// A contract name (owned version). Expected format: "init_<contract_name>".
@@ -719,7 +719,7 @@ impl OwnedContractName {
     /// "init_<contract_name>".
     #[inline(always)]
     pub fn new(name: String) -> Result<Self, NewContractNameError> {
-        ContractName::is_valid_contract_name(&name)?;
+        is_valid_contract_name(&name)?;
         Ok(OwnedContractName(name))
     }
 
@@ -774,7 +774,7 @@ impl<'a> ReceiveName<'a> {
     /// Create a new ReceiveName and check the format. Expected format:
     /// "<contract_name>.<func_name>".
     pub fn new(name: &'a str) -> Result<Self, NewReceiveNameError> {
-        ReceiveName::is_valid_receive_name(name)?;
+        is_valid_receive_name(name)?;
         Ok(ReceiveName(name))
     }
 
@@ -788,26 +788,26 @@ impl<'a> ReceiveName<'a> {
     /// Convert a `ReceiveName` to its owned counterpart. This is an expensive
     /// operation that requires memory allocation.
     pub fn to_owned(self) -> OwnedReceiveName { OwnedReceiveName(self.0.to_string()) }
+}
 
-    /// Check whether the given string is a valid contract receive function
-    /// name. This is the case if and only if
-    /// - the string is no more than [constants::MAX_FUNC_NAME_SIZE][m] bytes
-    /// - the string __contains__ a `.`
-    /// - all characters are ascii alphanumeric or punctuation characters.
-    ///
-    /// [m]: ./constants/constant.MAX_FUNC_NAME_SIZE.html
-    pub fn is_valid_receive_name(name: &str) -> Result<(), NewReceiveNameError> {
-        if !name.contains('.') {
-            return Err(NewReceiveNameError::MissingDotSeparator);
-        }
-        if name.len() > constants::MAX_FUNC_NAME_SIZE {
-            return Err(NewReceiveNameError::TooLong);
-        }
-        if !name.chars().all(|c| c.is_ascii_alphanumeric() || c.is_ascii_punctuation()) {
-            return Err(NewReceiveNameError::InvalidCharacters);
-        }
-        Ok(())
+/// Check whether the given string is a valid contract receive function
+/// name. This is the case if and only if
+/// - the string is no more than [constants::MAX_FUNC_NAME_SIZE][m] bytes
+/// - the string __contains__ a `.`
+/// - all characters are ascii alphanumeric or punctuation characters.
+///
+/// [m]: ./constants/constant.MAX_FUNC_NAME_SIZE.html
+pub fn is_valid_receive_name(name: &str) -> Result<(), NewReceiveNameError> {
+    if !name.contains('.') {
+        return Err(NewReceiveNameError::MissingDotSeparator);
     }
+    if name.len() > constants::MAX_FUNC_NAME_SIZE {
+        return Err(NewReceiveNameError::TooLong);
+    }
+    if !name.chars().all(|c| c.is_ascii_alphanumeric() || c.is_ascii_punctuation()) {
+        return Err(NewReceiveNameError::InvalidCharacters);
+    }
+    Ok(())
 }
 
 /// A receive name (owned version). Expected format:
@@ -819,7 +819,7 @@ impl OwnedReceiveName {
     /// Create a new OwnedReceiveName and check the format. Expected format:
     /// "<contract_name>.<func_name>".
     pub fn new(name: String) -> Result<Self, NewReceiveNameError> {
-        ReceiveName::is_valid_receive_name(&name)?;
+        is_valid_receive_name(&name)?;
         Ok(OwnedReceiveName(name))
     }
 
